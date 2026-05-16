@@ -1,21 +1,26 @@
+require("dotenv").config();
+
 const axios = require("axios");
 
 const Log = async (stack, level, packageName, message) => {
   try {
-    const payload = {
-      stack,
-      level,
-      package: packageName,
-      message,
-    };
-
-    await axios.post("http://4.224.186.213/evaluation-service/logs", payload, {
-      headers: {
-        "Content-Type": "application/json",
+    await axios.post(
+      process.env.LOG_API_URL,
+      {
+        stack,
+        level,
+        package: packageName,
+        message,
       },
-    });
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${process.env.ACCESS_TOKEN}`,
+        },
+      }
+    );
   } catch (error) {
-    // Avoid console.log based on requirements
+    // silent fail
   }
 };
 

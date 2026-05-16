@@ -2,44 +2,22 @@
 
 # Campus Notification Platform - REST API Design
 
-## Overview
-
-The Campus Notification Platform enables students to receive real-time updates regarding:
-
-- Placements
-- Events
-- Results
-- Announcements
-
-The system supports:
-
-- Notification management
-- Read/unread tracking
-- Filtering
-- Real-time delivery
-
----
-
-# Base URL
+## Base URL
 
 ```http
 /api/v1
 ```
 
----
-
-# Common Headers
+## Common Headers
 
 ```http
 Content-Type: application/json
 Authorization: Bearer <token>
 ```
 
-Note: Authentication is assumed pre-authorized as per evaluation instructions.
-
 ---
 
-# Notification Object Schema
+# Notification Schema
 
 ```json
 {
@@ -49,175 +27,21 @@ Note: Authentication is assumed pre-authorized as per evaluation instructions.
   "type": "placement | event | result | announcement",
   "priority": "low | medium | high",
   "isRead": false,
-  "createdAt": "ISO Date",
-  "updatedAt": "ISO Date"
+  "createdAt": "ISO Date"
 }
 ```
 
 ---
 
-# Core Features Supported
+# APIs
 
-1. Fetch all notifications
-2. Fetch notification by ID
-3. Create notification
-4. Mark notification as read
-5. Delete notification
-6. Filter notifications
-7. Real-time notifications
-
----
-
-# 1. Fetch All Notifications
-
-## Endpoint
+## Fetch Notifications
 
 ```http
-GET /api/v1/notifications
+GET /api/v1/notifications?page=1&limit=10
 ```
 
-## Query Parameters
-
-```http
-?page=1
-&limit=10
-&type=placement
-&isRead=false
-```
-
-## Sample Response
-
-```json
-{
-  "success": true,
-  "count": 2,
-  "notifications": [
-    {
-      "id": "n101",
-      "title": "Placement Drive",
-      "message": "TCS drive scheduled tomorrow",
-      "type": "placement",
-      "priority": "high",
-      "isRead": false,
-      "createdAt": "2026-05-16T10:00:00Z"
-    }
-  ]
-}
-```
-
----
-
-# 2. Fetch Notification By ID
-
-## Endpoint
-
-```http
-GET /api/v1/notifications/:id
-```
-
-## Sample Response
-
-```json
-{
-  "success": true,
-  "notification": {
-    "id": "n101",
-    "title": "Placement Drive",
-    "message": "TCS drive scheduled tomorrow",
-    "type": "placement",
-    "priority": "high",
-    "isRead": false
-  }
-}
-```
-
----
-
-# 3. Create Notification
-
-## Endpoint
-
-```http
-POST /api/v1/notifications
-```
-
-## Request Body
-
-```json
-{
-  "title": "Semester Results Published",
-  "message": "Results are available on portal",
-  "type": "result",
-  "priority": "high"
-}
-```
-
-## Sample Response
-
-```json
-{
-  "success": true,
-  "message": "Notification created successfully",
-  "notificationId": "n102"
-}
-```
-
----
-
-# 4. Mark Notification as Read
-
-## Endpoint
-
-```http
-PATCH /api/v1/notifications/:id/read
-```
-
-## Sample Response
-
-```json
-{
-  "success": true,
-  "message": "Notification marked as read"
-}
-```
-
----
-
-# 5. Delete Notification
-
-## Endpoint
-
-```http
-DELETE /api/v1/notifications/:id
-```
-
-## Sample Response
-
-```json
-{
-  "success": true,
-  "message": "Notification deleted successfully"
-}
-```
-
----
-
-# 6. Filter Notifications
-
-## Endpoint
-
-```http
-GET /api/v1/notifications/filter
-```
-
-## Query Parameters
-
-```http
-?type=placement
-&priority=high
-```
-
-## Sample Response
+### Response
 
 ```json
 {
@@ -228,36 +52,26 @@ GET /api/v1/notifications/filter
 
 ---
 
-# Real-Time Notification Design
+## Fetch Notification By ID
 
-## Recommended Technology
-
-- WebSockets using Socket.IO
-
-## Workflow
-
-1. Client establishes WebSocket connection
-2. Server sends notifications instantly
-3. Frontend listens for events
-4. UI updates in real time
+```http
+GET /api/v1/notifications/:id
+```
 
 ---
 
-# WebSocket Event Structure
+## Create Notification
 
-## Event Name
-
-```text
-new_notification
+```http
+POST /api/v1/notifications
 ```
 
-## Event Payload
+### Request
 
 ```json
 {
-  "id": "n120",
-  "title": "Amazon Hiring",
-  "message": "Amazon drive starts at 2 PM",
+  "title": "Placement Drive",
+  "message": "TCS drive tomorrow",
   "type": "placement",
   "priority": "high"
 }
@@ -265,36 +79,43 @@ new_notification
 
 ---
 
-# Error Response Structure
+## Mark As Read
 
-```json
-{
-  "success": false,
-  "error": {
-    "code": "NOT_FOUND",
-    "message": "Notification not found"
-  }
-}
+```http
+PATCH /api/v1/notifications/:id/read
 ```
 
 ---
 
-# Logging Middleware Integration
+## Delete Notification
 
-The application uses reusable logging middleware throughout the system.
+```http
+DELETE /api/v1/notifications/:id
+```
 
-Logging is performed for:
+---
 
-- API requests
-- API responses
-- Notification creation
-- Notification deletion
-- Errors
-- Warnings
-- Real-time notification delivery
-- Server startup events
+# Real-Time Notification Design
 
-## Example Logging Call
+Technology used:
+
+- WebSockets using Socket.IO
+
+Workflow:
+
+```text
+Backend → WebSocket Server → Frontend
+```
+
+Event:
+
+```text
+new_notification
+```
+
+---
+
+# Logging Middleware Usage
 
 ```javascript
 await Log(
@@ -307,10 +128,320 @@ await Log(
 
 ---
 
-# Scalability Considerations
+# Stage 2
 
-- Pagination support
-- Modular REST API design
-- Real-time communication using WebSockets
-- Reusable logging middleware
-- Consistent JSON structures
+# Database Selection
+
+Recommended DB: MongoDB
+
+## Reasons
+
+- Flexible schema
+- High scalability
+- Fast read/write performance
+- Suitable for real-time applications
+
+---
+
+# Notification Collection Schema
+
+```json
+{
+  "_id": "ObjectId",
+  "studentId": 1042,
+  "title": "Placement Drive",
+  "message": "TCS drive tomorrow",
+  "notificationType": "Placement",
+  "isRead": false,
+  "createdAt": "ISO Date"
+}
+```
+
+---
+
+# Useful Indexes
+
+```javascript
+db.notifications.createIndex({ studentId: 1 });
+db.notifications.createIndex({ createdAt: -1 });
+db.notifications.createIndex({ notificationType: 1 });
+```
+
+---
+
+# Scaling Problems
+
+Possible issues:
+
+- Slow queries
+- Increased storage
+- High concurrent traffic
+
+Solutions:
+
+- Indexing
+- Pagination
+- Redis caching
+- Read replicas
+- Archiving old notifications
+
+---
+
+# Sample Queries
+
+## Fetch Notifications
+
+```javascript
+db.notifications.find({
+  studentId: 1042,
+  isRead: false
+});
+```
+
+---
+
+## Create Notification
+
+```javascript
+db.notifications.insertOne({
+  studentId: 1042,
+  title: "Placement Drive"
+});
+```
+
+---
+
+# Stage 3
+
+# Query Optimization
+
+## Existing Query
+
+```sql
+SELECT * FROM notifications
+WHERE studentId = 1042
+AND isRead = false
+ORDER BY createdAt ASC;
+```
+
+---
+
+# Why Slow?
+
+With 5,000,000 notifications:
+
+- Full table scan occurs
+- Sorting becomes expensive
+
+Time Complexity:
+
+```text
+O(n)
+```
+
+---
+
+# Optimization
+
+## Composite Index
+
+```sql
+CREATE INDEX idx_notifications
+ON notifications(studentId, isRead, createdAt);
+```
+
+Improved Complexity:
+
+```text
+O(log n)
+```
+
+---
+
+# Should We Index Every Column?
+
+No.
+
+Too many indexes:
+
+- Increase storage
+- Slow inserts/updates
+- Reduce write performance
+
+Indexes should only exist for frequently queried columns.
+
+---
+
+# Placement Notification Query
+
+```sql
+SELECT DISTINCT studentId
+FROM notifications
+WHERE notificationType = 'Placement'
+AND createdAt >= NOW() - INTERVAL 7 DAY;
+```
+
+---
+
+# Stage 4
+
+# Performance Improvements
+
+## 1. Redis Caching
+
+Store frequently accessed notifications in Redis.
+
+Benefits:
+
+- Faster response
+- Reduced DB load
+
+Tradeoff:
+
+- Cache invalidation complexity
+
+---
+
+## 2. Pagination
+
+```http
+GET /api/v1/notifications?page=1&limit=20
+```
+
+Benefits:
+
+- Smaller queries
+- Faster loading
+
+Tradeoff:
+
+- Multiple API requests
+
+---
+
+## 3. WebSockets
+
+Replace repeated polling with real-time push notifications.
+
+Benefits:
+
+- Real-time updates
+- Lower API traffic
+
+Tradeoff:
+
+- Persistent socket connections
+
+---
+
+## 4. Read Replicas
+
+Use replica DBs for read-heavy operations.
+
+Benefits:
+
+- Better scalability
+
+Tradeoff:
+
+- Increased infrastructure cost
+
+---
+
+# Stage 5
+
+# Problems In Existing Implementation
+
+Current approach:
+
+- Sequential processing
+- Slow for 50,000 students
+- No retry mechanism
+- Single point of failure
+- Blocking email API calls
+
+---
+
+# Recommended Solution
+
+Use:
+
+- Queue-based architecture
+- Worker services
+- Retry mechanism
+- Parallel processing
+
+---
+
+# Improved Flow
+
+```text
+HR → Queue → Workers → DB + WebSocket + Email
+```
+
+---
+
+# Why Separate Email From DB Save?
+
+Database save is critical and fast.
+
+Email sending:
+
+- Slow
+- External dependency
+- Failure-prone
+
+Even if email fails, notification should still exist in the system.
+
+---
+
+# Revised Pseudocode
+
+```text
+function notify_all(student_ids, message):
+
+    for student_id in student_ids:
+
+        enqueue_job(student_id, message)
+
+
+worker(job):
+
+    save_to_db(job)
+
+    push_to_app(job)
+
+    enqueue_email_job(job)
+
+
+email_worker(job):
+
+    try:
+        send_email(job)
+
+    catch error:
+        retry(job)
+```
+
+---
+
+# Reliability Improvements
+
+- Retry failed jobs
+- Dead letter queue
+- Parallel workers
+- Distributed processing
+- Logging middleware integration
+
+---
+
+# Logging Example
+
+```javascript
+await Log(
+  "backend",
+  "info",
+  "notification-worker",
+  "Notification processed successfully"
+);
+```

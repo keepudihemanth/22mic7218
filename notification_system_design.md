@@ -523,3 +523,40 @@ await Log(
   "Top notifications generated successfully"
 );
 ```
+---
+
+# Stage 7
+
+# Frontend Implementation
+
+A responsive React + Material UI frontend was developed.
+
+## Features
+
+- Notifications page
+- Priority Inbox page
+- Notification filtering
+- Top N priority notifications
+- Viewed/unviewed notification distinction
+- Responsive mobile and desktop UI
+
+## Technologies Used
+
+- React
+- Vite
+- Material UI
+- Axios
+- React Router
+
+## Additional Improvements
+
+- Graceful API fallback handling
+- Priority-based notification sorting
+- Responsive card-based layout
+- Real-time friendly architecture
+
+The frontend runs on:
+
+```text
+http://localhost:3000
+```

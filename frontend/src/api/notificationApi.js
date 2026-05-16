@@ -20,13 +20,20 @@ export const fetchNotifications = async (
       },
     });
 
+    console.log(
+      "API Response:",
+      response.data
+    );
+
     return (
       response.data.notifications || []
     );
+
   } catch (error) {
+
     console.error(
       error.response?.data ||
-        error.message
+      error.message
     );
 
     return [];

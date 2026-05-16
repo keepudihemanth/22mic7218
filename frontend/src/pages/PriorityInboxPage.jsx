@@ -25,7 +25,7 @@ export default function PriorityInboxPage() {
   const loadNotifications = async () => {
     const data = await fetchNotifications(
       1,
-      50
+      10
     );
 
     setNotifications(

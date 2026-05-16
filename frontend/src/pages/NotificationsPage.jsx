@@ -26,7 +26,7 @@ export default function NotificationsPage() {
   const loadNotifications = async () => {
     const data = await fetchNotifications(
       1,
-      20,
+      10,
       type
     );
 

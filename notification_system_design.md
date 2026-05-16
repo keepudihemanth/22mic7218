@@ -445,3 +445,81 @@ await Log(
   "Notification processed successfully"
 );
 ```
+---
+
+# Stage 6
+
+# Priority Inbox Design
+
+The Priority Inbox displays the top unread notifications based on:
+
+1. Notification type weight
+2. Notification recency
+
+Priority order:
+
+```text
+Placement > Result > Event
+```
+
+More recent notifications receive higher scores.
+
+---
+
+# Approach
+
+Each notification is assigned:
+
+```text
+Priority Score =
+(Type Weight × 100) + Recency Score
+```
+
+The notifications are then:
+
+1. Sorted by priority score
+2. Top 10 notifications selected
+
+---
+
+# Efficient Maintenance of Top 10
+
+To efficiently maintain top notifications as new notifications arrive:
+
+- Use a Min Heap / Priority Queue
+- Maintain only top 10 notifications in memory
+- Insert new notifications dynamically
+- Remove lowest priority notification when heap exceeds size 10
+
+Time Complexity:
+
+```text
+O(log n)
+```
+
+for insertion.
+
+This avoids sorting the entire dataset repeatedly.
+
+---
+
+# Technologies Used
+
+- Node.js
+- JavaScript
+- Axios
+- Priority-based sorting
+- Protected API integration
+
+---
+
+# Logging Middleware Integration
+
+```javascript
+await Log(
+  "backend",
+  "info",
+  "priority-inbox-service",
+  "Top notifications generated successfully"
+);
+```
